@@ -17,8 +17,8 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#include "../../misc/lv_color.h"
 #include "../../hal/lv_hal_disp.h"
+#include "../../misc/lv_color.h"
 #include "../sw/lv_draw_sw.h"
 
 #if LV_USE_GPU_N9H30_GE2D && LV_VERSION_CHECK(8, 2, 0)
@@ -42,23 +42,22 @@ typedef lv_draw_sw_ctx_t lv_draw_n9h30_ge2d_ctx_t;
  */
 void lv_draw_n9h30_ge2d_init(void);
 
-void lv_draw_n9h30_ge2d_ctx_init(struct _lv_disp_drv_t *drv, lv_draw_ctx_t *draw_ctx);
+void lv_draw_n9h30_ge2d_ctx_init(struct _lv_disp_drv_t* drv, lv_draw_ctx_t* draw_ctx);
 
-void lv_draw_n9h30_ge2d_ctx_deinit(struct _lv_disp_drv_t *drv, lv_draw_ctx_t *draw_ctx);
+void lv_draw_n9h30_ge2d_ctx_deinit(struct _lv_disp_drv_t* drv, lv_draw_ctx_t* draw_ctx);
 
-void lv_draw_n9h30_ge2d_blend(lv_draw_ctx_t *draw_ctx, const lv_draw_sw_blend_dsc_t *dsc);
+void lv_draw_n9h30_ge2d_blend(lv_draw_ctx_t* draw_ctx, const lv_draw_sw_blend_dsc_t* dsc);
 
-void lv_gpu_n9h30_ge2d_wait_cb(lv_draw_ctx_t *draw_ctx);
+void lv_gpu_n9h30_ge2d_wait_cb(lv_draw_ctx_t* draw_ctx);
 
 /**********************
  *      MACROS
  **********************/
 
-#endif  /*#if LV_USE_GPU_N9H30_GE2D && LV_VERSION_CHECK(8, 2, 0)*/
+#endif /*#if LV_USE_GPU_N9H30_GE2D && LV_VERSION_CHECK(8, 2, 0)*/
 
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif
 
 #endif /*LV_GPU_N9H_GE2D_H*/
-

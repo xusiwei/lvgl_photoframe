@@ -15,7 +15,8 @@ if os.getenv('RTT_ROOT'):
 
 if  CROSS_TOOL == 'gcc':
 	PLATFORM = 'gcc'
-	EXEC_PATH = r'C:\Program Files (x86)\GNU Tools ARM Embedded\6 2017-q1-update\bin'
+	# EXEC_PATH = r'C:\Program Files (x86)\GNU Tools ARM Embedded\6 2017-q1-update\bin'
+	EXEC_PATH = r'/usr/bin'
 elif CROSS_TOOL == 'keil':
 	PLATFORM 	= 'armcc'
 	EXEC_PATH 	= r'C:\Keil_v5'
@@ -35,6 +36,7 @@ TARGET_NAME = 'rtthread.bin'
 if PLATFORM == 'gcc':
     # toolchains
     PREFIX = 'arm-none-eabi-'
+    # PREFIX = 'ccache arm-none-eabi-'
     CC = PREFIX + 'gcc'
     AS = PREFIX + 'gcc'
     AR = PREFIX + 'ar'

@@ -5,6 +5,11 @@
   "name": "LVGL"
  }, 
  {
+  "path": "/packages/system/FlashDB", 
+  "ver": "v1.1.2", 
+  "name": "FLASHDB"
+ }, 
+ {
   "path": "/packages/system/yaffs2", 
   "ver": "latest", 
   "name": "YAFFS"

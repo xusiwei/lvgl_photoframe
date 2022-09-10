@@ -301,7 +301,7 @@
 #define PKG_LVGL_THREAD_PRIO 20
 #define PKG_LVGL_THREAD_STACK_SIZE 4096
 #define PKG_LVGL_DISP_REFR_PERIOD 5
-#define PKG_LVGL_USING_DEMOS
+#define PKG_LVGL_USING_V08020
 #define PKG_LVGL_VER_NUM 0x08020
 /* end of LVGL: powerful and easy-to-use embedded GUI library */
 
@@ -335,6 +335,13 @@
 /* Micrium: Micrium software products porting for RT-Thread */
 
 /* end of Micrium: Micrium software products porting for RT-Thread */
+#define PKG_USING_FLASHDB
+#define FDB_USING_KVDB
+#define FDB_USING_TSDB
+#define FDB_USING_FILE_POSIX_MODE
+#define FDB_DEBUG_ENABLE
+#define PKG_USING_FLASHDB_V10102
+#define PKG_FLASHDB_VER_NUM 0x10102
 #define PKG_USING_DFS_YAFFS
 #define PKG_USING_YAFFS_LATEST_VERSION
 #define PKG_USING_RAMDISK
@@ -343,6 +350,10 @@
 
 /* peripheral libraries and drivers */
 
+
+/* Kendryte SDK */
+
+/* end of Kendryte SDK */
 /* end of peripheral libraries and drivers */
 
 /* AI packages */
@@ -363,6 +374,26 @@
 
 /* end of entertainment: terminal games and other interesting software packages */
 /* end of miscellaneous packages */
+
+/* Arduino libraries */
+
+
+/* Sensors */
+
+/* end of Sensors */
+
+/* Display */
+
+/* end of Display */
+
+/* Timing */
+
+/* end of Timing */
+
+/* Projects */
+
+/* end of Projects */
+/* end of Arduino libraries */
 /* end of RT-Thread online packages */
 
 /* Hardware Drivers Config */

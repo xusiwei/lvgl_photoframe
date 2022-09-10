@@ -220,6 +220,8 @@ static struct nu_sdh nu_sdh_arr [] =
 }; /* struct nu_sdh nu_sdh_arr [] */
 static struct rt_event sdh_event;
 
+struct rt_semaphore sd_fs_sem;
+
 static void SDH_IRQHandler(int vector, void *param)
 {
     nu_sdh_t sdh = (nu_sdh_t)param;
@@ -542,6 +544,9 @@ static int rt_hw_sdh_init(void)
     ret = rt_event_init(&sdh_event, "sdh_event", RT_IPC_FLAG_FIFO);
     RT_ASSERT(ret == RT_EOK);
 
+    ret = rt_sem_init(&sd_fs_sem, "sd_fs_sem", 0, RT_IPC_FLAG_FIFO);
+    RT_ASSERT(ret == RT_EOK);
+
 #if defined(NU_SDH_SHARED)
     ret = rt_mutex_init(&g_shared_lock, "sdh_share_lock", RT_IPC_FLAG_PRIO);
     RT_ASSERT(ret == RT_EOK);
@@ -661,6 +666,7 @@ static rt_err_t nu_sdh_hotplug_mount(nu_sdh_t sdh)
     if ((ret = dfs_mount(sdh->name, sdh->mounted_point, "elm", 0, 0)) == 0)
     {
         rt_kprintf("Mounted %s on %s\n", sdh->name, sdh->mounted_point);
+        rt_sem_release(&sd_fs_sem);
     }
     else
     {

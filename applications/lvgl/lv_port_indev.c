@@ -8,16 +8,16 @@
  * 2021-10-18     Meco Man     The first version
  * 2021-12-17     Wayne        Add input event
  */
-#include <lvgl.h>
-#include <stdbool.h>
-#include <rtdevice.h>
 #include "touch.h"
+#include <lvgl.h>
+#include <rtdevice.h>
+#include <stdbool.h>
 
 static lv_indev_state_t last_state = LV_INDEV_STATE_REL;
 static rt_int16_t last_x = 0;
 static rt_int16_t last_y = 0;
 
-static void input_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
+static void input_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data)
 {
     data->point.x = last_x;
     data->point.y = last_y;
@@ -26,20 +26,19 @@ static void input_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 
 void nu_touch_inputevent_cb(rt_int16_t x, rt_int16_t y, rt_uint8_t state)
 {
-    switch (state)
-    {
-    case RT_TOUCH_EVENT_UP:
-        last_state = LV_INDEV_STATE_RELEASED;
-        break;
-    case RT_TOUCH_EVENT_DOWN:
-        last_x = x;
-        last_y = y;
-        last_state = LV_INDEV_STATE_PRESSED;
-        break;
-    case RT_TOUCH_EVENT_MOVE:
-        last_x = x;
-        last_y = y;
-        break;
+    switch (state) {
+        case RT_TOUCH_EVENT_UP:
+            last_state = LV_INDEV_STATE_RELEASED;
+            break;
+        case RT_TOUCH_EVENT_DOWN:
+            last_x = x;
+            last_y = y;
+            last_state = LV_INDEV_STATE_PRESSED;
+            break;
+        case RT_TOUCH_EVENT_MOVE:
+            last_x = x;
+            last_y = y;
+            break;
     }
 }
 

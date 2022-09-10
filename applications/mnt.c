@@ -1,46 +1,48 @@
-/**************************************************************************//**
-*
-* @copyright (C) 2019 Nuvoton Technology Corp. All rights reserved.
-*
-* SPDX-License-Identifier: Apache-2.0
-*
-* Change Logs:
-* Date            Author       Notes
-* 2020-12-12      Wayne        First version
-*
-******************************************************************************/
+/**************************************************************************/ /**
+                                                                              *
+                                                                              * @copyright (C) 2019 Nuvoton Technology
+                                                                              *Corp. All rights reserved.
+                                                                              *
+                                                                              * SPDX-License-Identifier: Apache-2.0
+                                                                              *
+                                                                              * Change Logs:
+                                                                              * Date            Author       Notes
+                                                                              * 2020-12-12      Wayne        First
+                                                                              *version
+                                                                              *
+                                                                              ******************************************************************************/
 
 #include "rtconfig.h"
 
 #include <rtthread.h>
 
-#define LOG_TAG         "mnt"
+#define LOG_TAG "mnt"
 #define DBG_ENABLE
 #define DBG_SECTION_NAME "mnt"
 #define DBG_LEVEL DBG_ERROR
 #define DBG_COLOR
 #include <rtdbg.h>
 
-#include <dfs_fs.h>
 #include <dfs_file.h>
-#include <unistd.h>
+#include <dfs_fs.h>
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/statfs.h>
+#include <unistd.h>
 
 #if defined(RT_USING_FAL)
-    #include <fal.h>
+#include <fal.h>
 #endif
 
 #if defined(PKG_USING_RAMDISK)
-    #define RAMDISK_NAME         "ramdisk0"
-    #define RAMDISK_UDC          "ramdisk1"
-    #define MOUNT_POINT_RAMDISK0 "/"
+#define RAMDISK_NAME "ramdisk0"
+#define RAMDISK_UDC "ramdisk1"
+#define MOUNT_POINT_RAMDISK0 "/"
 #endif
 
 #if defined(BOARD_USING_STORAGE_SPIFLASH)
-    #define PARTITION_NAME_FILESYSTEM "filesystem"
-    #define MOUNT_POINT_SPIFLASH0 "/mnt/"PARTITION_NAME_FILESYSTEM
+#define PARTITION_NAME_FILESYSTEM "filesystem"
+#define MOUNT_POINT_SPIFLASH0 "/mnt/" PARTITION_NAME_FILESYSTEM
 #endif
 
 #ifdef RT_USING_DFS_MNTTABLE
@@ -53,27 +55,25 @@ unsigned long rwflag;
 const void   *data;
 */
 
-const struct dfs_mount_tbl mount_table[] =
-{
+const struct dfs_mount_tbl mount_table[] = {
 #if defined(PKG_USING_RAMDISK)
-    { RAMDISK_UDC, "/mnt/ram_usbd", "elm", 0, RT_NULL },
+    {RAMDISK_UDC, "/mnt/ram_usbd", "elm", 0, RT_NULL},
 #endif
 
 #if defined(BOARD_USING_STORAGE_SPIFLASH)
-    { PARTITION_NAME_FILESYSTEM, "/mnt/filesystem", "elm", 0, RT_NULL },
+    {PARTITION_NAME_FILESYSTEM, "/mnt/filesystem", "elm", 0, RT_NULL},
 #endif
 #if defined(PKG_USING_DFS_YAFFS)
-    { "nand1", "/mnt/fminand", "yaffs", 0, RT_NULL },
+    {"nand1", "/mnt/fminand", "yaffs", 0, RT_NULL},
 #endif
 
     {0},
 };
 #endif
 
-
 #if defined(PKG_USING_RAMDISK)
 
-extern rt_err_t ramdisk_init(const char *dev_name, rt_uint8_t *disk_addr, rt_size_t block_size, rt_size_t num_block);
+extern rt_err_t ramdisk_init(const char* dev_name, rt_uint8_t* disk_addr, rt_size_t block_size, rt_size_t num_block);
 int ramdisk_device_init(void)
 {
     rt_err_t result = RT_EOK;
@@ -91,11 +91,11 @@ int ramdisk_device_init(void)
 INIT_DEVICE_EXPORT(ramdisk_device_init);
 
 /* Recursive mkdir */
-static int mkdir_p(const char *dir, const mode_t mode)
+static int mkdir_p(const char* dir, const mode_t mode)
 {
     int ret = -1;
-    char *tmp = NULL;
-    char *p = NULL;
+    char* tmp = NULL;
+    char* p = NULL;
     struct stat sb;
     rt_size_t len;
 
@@ -108,40 +108,31 @@ static int mkdir_p(const char *dir, const mode_t mode)
     tmp = rt_strdup(dir);
 
     /* Remove trailing slash */
-    if (tmp[len - 1] == '/')
-    {
+    if (tmp[len - 1] == '/') {
         tmp[len - 1] = '\0';
         len--;
     }
 
     /* check if path exists and is a directory */
-    if (stat(tmp, &sb) == 0)
-    {
-        if (S_ISDIR(sb.st_mode))
-        {
+    if (stat(tmp, &sb) == 0) {
+        if (S_ISDIR(sb.st_mode)) {
             ret = 0;
             goto exit_mkdir_p;
         }
     }
 
     /* Recursive mkdir */
-    for (p = tmp + 1; p - tmp <= len; p++)
-    {
-        if ((*p == '/') || (p - tmp == len))
-        {
+    for (p = tmp + 1; p - tmp <= len; p++) {
+        if ((*p == '/') || (p - tmp == len)) {
             *p = 0;
 
             /* Test path */
-            if (stat(tmp, &sb) != 0)
-            {
+            if (stat(tmp, &sb) != 0) {
                 /* Path does not exist - create directory */
-                if (mkdir(tmp, mode) < 0)
-                {
+                if (mkdir(tmp, mode) < 0) {
                     goto exit_mkdir_p;
                 }
-            }
-            else if (!S_ISDIR(sb.st_mode))
-            {
+            } else if (!S_ISDIR(sb.st_mode)) {
                 /* Not a directory */
                 goto exit_mkdir_p;
             }
@@ -165,15 +156,12 @@ exit_mkdir_p:
 void yaffs_dev_init(void)
 {
     int i;
-    for (i=0; i<sizeof(mount_table)/sizeof(struct dfs_mount_tbl);i++)
-    {
-        if ( mount_table[i].filesystemtype && !rt_strcmp( mount_table[i].filesystemtype, "yaffs") )
-        {
-             struct rt_mtd_nand_device* psMtdNandDev = RT_MTD_NAND_DEVICE(rt_device_find(mount_table[i].device_name));
-             if ( psMtdNandDev )
-             {
-                  yaffs_start_up(psMtdNandDev, (const char*)mount_table[i].path);
-             }
+    for (i = 0; i < sizeof(mount_table) / sizeof(struct dfs_mount_tbl); i++) {
+        if (mount_table[i].filesystemtype && !rt_strcmp(mount_table[i].filesystemtype, "yaffs")) {
+            struct rt_mtd_nand_device* psMtdNandDev = RT_MTD_NAND_DEVICE(rt_device_find(mount_table[i].device_name));
+            if (psMtdNandDev) {
+                yaffs_start_up(psMtdNandDev, (const char*)mount_table[i].path);
+            }
         }
     }
 }
@@ -191,21 +179,17 @@ int filesystem_init(void)
 #endif
 
     // ramdisk as root
-    if (!rt_device_find(RAMDISK_NAME))
-    {
+    if (!rt_device_find(RAMDISK_NAME)) {
         LOG_E("cannot find %s device", RAMDISK_NAME);
-			  result = -RT_ERROR;
+        result = -RT_ERROR;
         goto exit_filesystem_init;
-    }
-    else
-    {
+    } else {
         /* Format these ramdisk */
         result = (rt_err_t)dfs_mkfs("elm", RAMDISK_NAME);
         RT_ASSERT(result == RT_EOK);
 
         /* mount ramdisk0 as root directory */
-        if (dfs_mount(RAMDISK_NAME, "/", "elm", 0, RT_NULL) == 0)
-        {
+        if (dfs_mount(RAMDISK_NAME, "/", "elm", 0, RT_NULL) == 0) {
             LOG_I("ramdisk mounted on \"/\".");
 
             /* now you can create dir dynamically. */
@@ -218,21 +202,16 @@ int filesystem_init(void)
 #if defined(RT_USBH_MSTORAGE) && defined(UDISK_MOUNTPOINT)
             mkdir_p(UDISK_MOUNTPOINT, 0x777);
 #endif
-        }
-        else
-        {
+        } else {
             LOG_E("root folder creation failed!\n");
             goto exit_filesystem_init;
         }
     }
 
-    if (!rt_device_find(RAMDISK_UDC))
-    {
+    if (!rt_device_find(RAMDISK_UDC)) {
         LOG_E("cannot find %s device", RAMDISK_UDC);
         goto exit_filesystem_init;
-    }
-    else
-    {
+    } else {
         /* Format these ramdisk */
         result = (rt_err_t)dfs_mkfs("elm", RAMDISK_UDC);
         RT_ASSERT(result == RT_EOK);
@@ -240,9 +219,8 @@ int filesystem_init(void)
 
 #if defined(BOARD_USING_STORAGE_SPIFLASH)
     {
-        struct rt_device *psNorFlash = fal_blk_device_create(PARTITION_NAME_FILESYSTEM);
-        if (!psNorFlash)
-        {
+        struct rt_device* psNorFlash = fal_blk_device_create(PARTITION_NAME_FILESYSTEM);
+        if (!psNorFlash) {
             rt_kprintf("Failed to create block device for %s.\n", PARTITION_NAME_FILESYSTEM);
         }
     }
@@ -257,9 +235,9 @@ exit_filesystem_init:
     return -result;
 }
 #if defined(__CC_ARM)
-    // Start-up sequence is different.....orz
-    INIT_ENV_EXPORT(filesystem_init);
+// Start-up sequence is different.....orz
+INIT_ENV_EXPORT(filesystem_init);
 #else
-    INIT_COMPONENT_EXPORT(filesystem_init);
+INIT_COMPONENT_EXPORT(filesystem_init);
 #endif
 #endif
