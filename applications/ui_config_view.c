@@ -43,7 +43,9 @@ lv_obj_t* ui_config_view_create()
     // Create a slider in the center of the display
     lv_obj_t* slider = lv_slider_create(cont);
     lv_obj_center(slider);
+    lv_obj_set_width(slider, 760);
     lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+    // lv_slider_set_value(slider, get_switch_interval_config(), LV_ANIM_OFF);
     lv_slider_set_range(slider, 1, 100);
 
     // Create a label below the slider
